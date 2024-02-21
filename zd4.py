@@ -57,12 +57,25 @@
 #         return b
 
 #Пятый способ
-def main(n):
-    return (
-        -0.6 if n == 0 else
-        0.94 if n == 1 else
-        (lambda x: 0.17 - x[0] ** 2 - x[1])([main(n-1),main(n-2)])
-    )
+# def main(n):
+#     return (
+#         -0.6 if n == 0 else
+#         0.94 if n == 1 else
+#         (lambda x: 0.17 - x[0] ** 2 - x[1])([main(n-1),main(n-2)])
+#     )
 
+
+# Четвертый способ
+import math
+
+
+def main(n):
+    sign = n
+    match sign:
+        case 0:
+            return -0.6
+        case 1:
+            return 0.94
+    return 0.17 - (main(n - 1))** 2 - main(n - 2)
 
 print(main(9))
