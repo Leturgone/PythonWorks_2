@@ -18,3 +18,6 @@
 
 Задание 7
 ![изображение](https://github.com/Leturgone/PythonWorks_2/assets/145966860/edf23e93-14b7-494a-a52f-01a1524b5e12)
+
+Задание 8
+![изображение](https://github.com/Leturgone/PythonWorks_2/assets/145966860/35b07c12-0dcf-49c1-881c-07d01a9ddf38)
