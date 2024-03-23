@@ -483,83 +483,159 @@
 
 # print()
 
+# import matplotlib.pyplot as plt
+# import numpy as np
+
+# plt.clf()
+
+# #ветвь дерева
+
+# class branch():
+#     def __init__(self, x, x2, y, y2):
+#         self.x = x
+#         self.y = y
+#         self.x2 = x2
+#         self.y2 = y2
+#         self.grow_count = 0#количество разветвлений 
+#         self.grow_x = 0
+#         self.grow_y = 0
+#         self.width = 1#ширина
+#         self.child = []
+
+#     def updateWidth(self):
+#         #Рекурсивно обновляет ширину ветви на основе суммарной ширины всех ее дочерних ветвей.
+#         width = 0
+#         for i in range(len(self.child)):
+#             width += self.child[i].updateWidth()
+#         if width > 0:
+#             self.width = width
+#         return self.width
+
+#     def plot(self):
+#         #Рисует ветвь как линию с заданной шириной и цветом.
+#         plt.plot([self.x, self.x2], [self.y, self.y2], linewidth=np.sqrt(self.width), color='black')
+
+# branches = [branch(30, 30, -3, 0)]
+
+# branches[0].plot()
+
+# maxdist = 10
+# mindist = 1
+
+# x = np.random.random(300) * 70
+# y = np.random.random(300) * 70
+
+# for h in range(100):
+#     for i in range(len(x) - 1, 0, -1):
+#         #Для каждой точки в x и y находит ближайшую ветвь.
+#         closest_branch = 0
+#         dist = 1000
+#         for j in range(len(branches)):
+#             temp_dist = np.sqrt((x[i] - branches[j].x2)**2 + (y[i] - branches[j].y2)**2)
+#             if temp_dist < dist:
+#                 dist = temp_dist
+#                 closest_branch = j
+#         #Если точка находится слишком близко к ветви (меньше mindist), она удаляется из массивов.
+#         if dist < mindist:
+#             x = np.delete(x, i)
+#             y = np.delete(y, i)
+#         #Если точка находится достаточно близко к ветви (меньше maxdist), она заставляет ветвь расти в направлении точки.    
+#         elif dist < maxdist:
+#             branches[closest_branch].grow_count += 1
+#             branches[closest_branch].grow_x += (x[i] - branches[closest_branch].x2) / dist
+#             branches[closest_branch].grow_y += (y[i] - branches[closest_branch].y2) / dist
+#         #Для каждой ветви, которая росла в течение этой итерации, создается новая дочерняя ветвь, которая становится частью дерева.
+#     for i in range(len(branches)):
+#         if branches[i].grow_count > 0:
+#             newBranch = branch(branches[i].x2, branches[i].x2 + branches[i].grow_x / branches[i].grow_count,
+#                                branches[i].y2, branches[i].y2 + branches[i].grow_y / branches[i].grow_count)
+#             branches.append(newBranch)
+#             branches[i].child.append(newBranch)
+#             branches[i].grow_count = 0
+#             branches[i].grow_x = 0
+#             branches[i].grow_y = 0
+
+# plt.clf()
+# branches[0].updateWidth()
+
+# for i in range(len(branches)):
+#     branches[i].plot()
+
+# plt.axis('equal')
+# plt.show()
+
+# class TAG:
+#     def __init__(self, name):
+#         self.name = name
+#         self.tags = []
+
+#     def __enter__(self):#когда входим в with
+#         print(f"<{self.name}>")
+#         return self
+
+#     def __exit__(self, type, value, traceback):
+#         print(f"</{self.name}>")#когда выходим из with
+
+#     def __call__(self, *tags):#чтобы можно было использовать как функцию
+#         if tags:
+#             for tag in tags:
+#                 print(tag)
+
+
+# class HTML:
+#     def __init__(self):
+#         self.body = TAG('body')
+#         self.div = TAG('div')
+#         self.p = TAG('p')
+
+#     def get_code(self):
+#         pass
+
+
+# html = HTML()
+# with html.body:
+#     with html.div:
+#         with html.div:
+#             html.p('Первая строка.')
+#             html.p('Вторая строка.')
+#         with html.div:
+#             html.p('Третья строка.')
+
+
+
+
 import matplotlib.pyplot as plt
-import numpy as np
+import networkx as nx
 
-plt.clf()
+class Tree:
+    def __init__(self, val, left = None, right = None):
+        self.val = val
+        self.left = left
+        self.right = right
 
-#ветвь дерева
+    def knut_visual_tree(self, TREE, parent = None, pos = None, x = 0, y = 0, level = 0, vert = 1.0, hor=1.0):
+        if pos is None:
+            pos = {self.val: (x, y)}  
+        else:
+            pos[self.val] = (x, y)
 
-class branch():
-    def __init__(self, x, x2, y, y2):
-        self.x = x
-        self.y = y
-        self.x2 = x2
-        self.y2 = y2
-        self.grow_count = 0#количество разветвлений 
-        self.grow_x = 0
-        self.grow_y = 0
-        self.width = 1#ширина
-        self.child = []
+        if parent is not None:
+            TREE.add_edge(parent, self.val)
 
-    def updateWidth(self):
-        #Рекурсивно обновляет ширину ветви на основе суммарной ширины всех ее дочерних ветвей.
-        width = 0
-        for i in range(len(self.child)):
-            width += self.child[i].updateWidth()
-        if width > 0:
-            self.width = width
-        return self.width
+        if self.left:
+            pos = self.left.knut_visual_tree(TREE, self.val, pos, x - hor, y - vert, level + 1, vert, hor/2)
+        if self.right:
+            pos = self.right.knut_visual_tree(TREE, self.val, pos, x + hor, y - vert, level + 1, vert, hor/2)
 
-    def plot(self):
-        #Рисует ветвь как линию с заданной шириной и цветом.
-        plt.plot([self.x, self.x2], [self.y, self.y2], linewidth=np.sqrt(self.width), color='black')
+        return pos
 
-branches = [branch(30, 30, -3, 0)]
 
-branches[0].plot()
+tree_2 = Tree(2, Tree(3, Tree(4), Tree(5)), Tree(6, None, Tree(7)))
+tree_8 = Tree(8, Tree(9, Tree(10), Tree(11, Tree(12), Tree(13))), Tree(14))
+tree = Tree(1, tree_2, tree_8)
 
-maxdist = 10
-mindist = 1
-
-x = np.random.random(300) * 70
-y = np.random.random(300) * 70
-
-for h in range(100):
-    for i in range(len(x) - 1, 0, -1):
-        #Для каждой точки в x и y находит ближайшую ветвь.
-        closest_branch = 0
-        dist = 1000
-        for j in range(len(branches)):
-            temp_dist = np.sqrt((x[i] - branches[j].x2)**2 + (y[i] - branches[j].y2)**2)
-            if temp_dist < dist:
-                dist = temp_dist
-                closest_branch = j
-        #Если точка находится слишком близко к ветви (меньше mindist), она удаляется из массивов.
-        if dist < mindist:
-            x = np.delete(x, i)
-            y = np.delete(y, i)
-        #Если точка находится достаточно близко к ветви (меньше maxdist), она заставляет ветвь расти в направлении точки.    
-        elif dist < maxdist:
-            branches[closest_branch].grow_count += 1
-            branches[closest_branch].grow_x += (x[i] - branches[closest_branch].x2) / dist
-            branches[closest_branch].grow_y += (y[i] - branches[closest_branch].y2) / dist
-        #Для каждой ветви, которая росла в течение этой итерации, создается новая дочерняя ветвь, которая становится частью дерева.
-    for i in range(len(branches)):
-        if branches[i].grow_count > 0:
-            newBranch = branch(branches[i].x2, branches[i].x2 + branches[i].grow_x / branches[i].grow_count,
-                               branches[i].y2, branches[i].y2 + branches[i].grow_y / branches[i].grow_count)
-            branches.append(newBranch)
-            branches[i].child.append(newBranch)
-            branches[i].grow_count = 0
-            branches[i].grow_x = 0
-            branches[i].grow_y = 0
-
-plt.clf()
-branches[0].updateWidth()
-
-for i in range(len(branches)):
-    branches[i].plot()
-
-plt.axis('equal')
+TREE = nx.DiGraph()
+pos = tree.knut_visual_tree(TREE)
+plt.figure(figsize=(12, 8))
+nx.draw(TREE, pos, with_labels=True, arrows=True, node_color ='none')
 plt.show()
