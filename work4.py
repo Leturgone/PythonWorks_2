@@ -604,38 +604,166 @@
 
 
 
-import matplotlib.pyplot as plt
-import networkx as nx
+# import matplotlib.pyplot as plt
+# import networkx as nx
 
-class Tree:
-    def __init__(self, val, left = None, right = None):
-        self.val = val
-        self.left = left
-        self.right = right
+# class Tree:
+#     def __init__(self, val, left = None, right = None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
 
-    def knut_visual_tree(self, TREE, parent = None, pos = None, x = 0, y = 0, level = 0, vert = 1.0, hor=1.0):
-        if pos is None:
-            pos = {self.val: (x, y)}  
-        else:
-            pos[self.val] = (x, y)
+#     def knut_visual_tree(self, TREE, parent = None, pos = None, x = 0, y = 0, level = 0, vert = 1.0, hor=1.0):
+#         if pos is None:
+#             pos = {self.val: (x, y)}  
+#         else:
+#             pos[self.val] = (x, y)
 
-        if parent is not None:
-            TREE.add_edge(parent, self.val)
+#         if parent is not None:
+#             TREE.add_edge(parent, self.val)
 
-        if self.left:
-            pos = self.left.knut_visual_tree(TREE, self.val, pos, x - hor, y - vert, level + 1, vert, hor/2)
-        if self.right:
-            pos = self.right.knut_visual_tree(TREE, self.val, pos, x + hor, y - vert, level + 1, vert, hor/2)
+#         if self.left:
+#             pos = self.left.knut_visual_tree(TREE, self.val, pos, x - hor, y - vert, level + 1, vert, hor/2)
+#         if self.right:
+#             pos = self.right.knut_visual_tree(TREE, self.val, pos, x + hor, y - vert, level + 1, vert, hor/2)
 
-        return pos
+#         return pos
 
 
-tree_2 = Tree(2, Tree(3, Tree(4), Tree(5)), Tree(6, None, Tree(7)))
-tree_8 = Tree(8, Tree(9, Tree(10), Tree(11, Tree(12), Tree(13))), Tree(14))
-tree = Tree(1, tree_2, tree_8)
+# tree_2 = Tree(2, Tree(3, Tree(4), Tree(5)), Tree(6, None, Tree(7)))
+# tree_8 = Tree(8, Tree(9, Tree(10), Tree(11, Tree(12), Tree(13))), Tree(14))
+# tree = Tree(1, tree_2, tree_8)
 
-TREE = nx.DiGraph()
-pos = tree.knut_visual_tree(TREE)
-plt.figure(figsize=(12, 8))
-nx.draw(TREE, pos, with_labels=True, arrows=True, node_color ='none')
-plt.show()
+# TREE = nx.DiGraph()
+# pos = tree.knut_visual_tree(TREE)
+# plt.figure(figsize=(12, 8))
+# nx.draw(TREE, pos, with_labels=True, arrows=True, node_color ='none')
+# plt.show()
+
+import math
+from random import randint
+from tkinter import Tk, Canvas, Button
+
+CANVAS_WIDTH, CANVAS_HEIGHT = 800, 600
+
+NODE_R = 15
+
+C1, C2, C3, C4 = 2, 50, 20000, 0.1
+
+DELAY = 10
+
+class Vec:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+class Node:
+    def __init__(self, text):
+        self.text = text
+        self.targets = []
+        self.vec = Vec(0, 0)
+
+    def to(self, *nodes):
+        for n in nodes:
+            self.targets.append(n)
+            n.targets.append(self)
+        return self
+
+class Graph:
+    def __init__(self):
+        self.nodes = []
+
+    def add(self, text):
+        self.nodes.append(Node(text))
+        return self.nodes[-1]
+
+def random_layout(nodes):
+    for n in nodes:
+        n.vec.x = randint(NODE_R * 4, CANVAS_WIDTH - NODE_R * 4 - 1)
+        n.vec.y = randint(NODE_R * 4, CANVAS_HEIGHT - NODE_R * 4 - 1)
+
+class GUI:
+    def __init__(self, root):
+        self.canvas = Canvas(root, width=CANVAS_WIDTH,
+                             height=CANVAS_HEIGHT, bg="white")
+        self.draw_button = Button(root, text="Draw", command=self.draw_graph)
+        self.canvas.pack()
+        self.draw_button.pack()
+        self.nodes = None
+
+    def draw_node(self, x, y, text, r=NODE_R):
+        self.canvas.create_oval(x - r, y - r, x + r, y + r, fill="MistyRose2")
+        self.canvas.create_text(x, y, text=text)
+
+    def draw_graph(self):
+        self.canvas.delete("all")
+        random_layout(self.nodes)
+        self.force_layout()
+        self.draw_graph_items()
+
+    def draw_graph_items(self):
+        for n in self.nodes:
+            for t in n.targets:
+                self.canvas.create_line(n.vec.x, n.vec.y, t.vec.x, t.vec.y)
+        for n in self.nodes:
+            self.draw_node(n.vec.x, n.vec.y, n.text)
+    
+
+    def f_ball(self, u, v):
+        dx = v.vec.x - u.vec.x
+        dy = v.vec.y - u.vec.y
+        r = math.sqrt(dx**2 + dy**2)
+        force = C3 / (r**2)
+        return Vec(force * dx / r, force * dy / r)
+    
+    
+    def f_spring(self, u, v):
+        dx = v.vec.x - u.vec.x
+        dy = v.vec.y - u.vec.y
+        r = math.sqrt(dx**2 + dy**2)
+        force = C1 * (r - C2)
+        return Vec(force * dx / r, force * dy / r)
+
+    
+    
+    def force_layout(self):
+        forces = {node: Vec(0, 0) for node in self.nodes}
+
+        for node in self.nodes:
+            for target in node.targets:
+                spring_force = self.f_spring(node, target)
+                forces[node].x += spring_force.x
+                forces[node].y += spring_force.y
+
+        for i, node in enumerate(self.nodes):
+            for other_node in self.nodes[i+1:]:
+                ball_force = self.f_ball(node, other_node)
+                forces[node].x += ball_force.x
+                forces[node].y += ball_force.y
+                forces[other_node].x -= ball_force.x
+                forces[other_node].y -= ball_force.y
+
+        for node in self.nodes:
+            node.vec.x += C4 * forces[node].x
+            node.vec.y += C4 * forces[node].y
+
+root = Tk()
+gui = GUI(root)
+
+g = Graph()
+n1 = g.add("1")
+n2 = g.add("2")
+n3 = g.add("3")
+n4 = g.add("4")
+n5 = g.add("5")
+n6 = g.add("6")
+n7 = g.add("7")
+n1.to(n2, n3, n4, n5)
+n2.to(n5)
+n3.to(n2, n4)
+n6.to(n4, n1, n7)
+n7.to(n5, n1)
+
+gui.nodes = g.nodes
+
+root.mainloop()
