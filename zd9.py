@@ -9,7 +9,6 @@ def main(s):
     return list_of_tuples
 
 
-
 ##Второе по популярности решение
 # def main(s):
 #     k = ["do", "let", "ne;", "<: ", " :>", "::=", ".", "\n"]
