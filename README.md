@@ -21,3 +21,7 @@
 
 Задание 8
 ![изображение](https://github.com/Leturgone/PythonWorks_2/assets/145966860/35b07c12-0dcf-49c1-881c-07d01a9ddf38)
+
+Задание 9
+![изображение](https://github.com/Leturgone/PythonWorks_2/assets/145966860/87918f60-38f0-4ee2-bfd7-7018a96a5c1b)
+
