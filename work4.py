@@ -640,130 +640,232 @@
 # nx.draw(TREE, pos, with_labels=True, arrows=True, node_color ='none')
 # plt.show()
 
-import math
-from random import randint
-from tkinter import Tk, Canvas, Button
+# import math
+# from random import randint
+# from tkinter import Tk, Canvas, Button
 
-CANVAS_WIDTH, CANVAS_HEIGHT = 800, 600
+# CANVAS_WIDTH, CANVAS_HEIGHT = 800, 600
 
-NODE_R = 15
+# NODE_R = 15
 
-C1, C2, C3, C4 = 2, 50, 20000, 0.1
+# C1, C2, C3, C4 = 2, 50, 20000, 0.1
 
-DELAY = 10
+# DELAY = 10
 
-class Vec:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+# class Vec:
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
 
-class Node:
-    def __init__(self, text):
-        self.text = text
-        self.targets = []
-        self.vec = Vec(0, 0)
+# class Node:
+#     def __init__(self, text):
+#         self.text = text
+#         self.targets = []
+#         self.vec = Vec(0, 0)
 
-    def to(self, *nodes):
-        for n in nodes:
-            self.targets.append(n)
-            n.targets.append(self)
-        return self
+#     def to(self, *nodes):
+#         for n in nodes:
+#             self.targets.append(n)
+#             n.targets.append(self)
+#         return self
 
-class Graph:
-    def __init__(self):
-        self.nodes = []
+# class Graph:
+#     def __init__(self):
+#         self.nodes = []
 
-    def add(self, text):
-        self.nodes.append(Node(text))
-        return self.nodes[-1]
+#     def add(self, text):
+#         self.nodes.append(Node(text))
+#         return self.nodes[-1]
 
-def random_layout(nodes):
-    for n in nodes:
-        n.vec.x = randint(NODE_R * 4, CANVAS_WIDTH - NODE_R * 4 - 1)
-        n.vec.y = randint(NODE_R * 4, CANVAS_HEIGHT - NODE_R * 4 - 1)
+# def random_layout(nodes):
+#     for n in nodes:
+#         n.vec.x = randint(NODE_R * 4, CANVAS_WIDTH - NODE_R * 4 - 1)
+#         n.vec.y = randint(NODE_R * 4, CANVAS_HEIGHT - NODE_R * 4 - 1)
 
-class GUI:
-    def __init__(self, root):
-        self.canvas = Canvas(root, width=CANVAS_WIDTH,
-                             height=CANVAS_HEIGHT, bg="white")
-        self.draw_button = Button(root, text="Draw", command=self.draw_graph)
-        self.canvas.pack()
-        self.draw_button.pack()
-        self.nodes = None
+# class GUI:
+#     def __init__(self, root):
+#         self.canvas = Canvas(root, width=CANVAS_WIDTH,
+#                              height=CANVAS_HEIGHT, bg="white")
+#         self.draw_button = Button(root, text="Draw", command=self.draw_graph)
+#         self.canvas.pack()
+#         self.draw_button.pack()
+#         self.nodes = None
 
-    def draw_node(self, x, y, text, r=NODE_R):
-        self.canvas.create_oval(x - r, y - r, x + r, y + r, fill="MistyRose2")
-        self.canvas.create_text(x, y, text=text)
+#     def draw_node(self, x, y, text, r=NODE_R):
+#         self.canvas.create_oval(x - r, y - r, x + r, y + r, fill="MistyRose2")
+#         self.canvas.create_text(x, y, text=text)
 
-    def draw_graph(self):
-        self.canvas.delete("all")
-        random_layout(self.nodes)
-        self.force_layout()
-        self.draw_graph_items()
+#     def draw_graph(self):
+#         self.canvas.delete("all")
+#         random_layout(self.nodes)
+#         self.force_layout()
+#         self.draw_graph_items()
 
-    def draw_graph_items(self):
-        for n in self.nodes:
-            for t in n.targets:
-                self.canvas.create_line(n.vec.x, n.vec.y, t.vec.x, t.vec.y)
-        for n in self.nodes:
-            self.draw_node(n.vec.x, n.vec.y, n.text)
+#     def draw_graph_items(self):
+#         for n in self.nodes:
+#             for t in n.targets:
+#                 self.canvas.create_line(n.vec.x, n.vec.y, t.vec.x, t.vec.y)
+#         for n in self.nodes:
+#             self.draw_node(n.vec.x, n.vec.y, n.text)
     
 
-    def f_ball(self, u, v):
-        dx = v.vec.x - u.vec.x
-        dy = v.vec.y - u.vec.y
-        r = math.sqrt(dx**2 + dy**2)
-        force = C3 / (r**2)
-        return Vec(force * dx / r, force * dy / r)
+#     def f_ball(self, u, v):
+#         dx = v.vec.x - u.vec.x
+#         dy = v.vec.y - u.vec.y
+#         r = math.sqrt(dx**2 + dy**2)
+#         force = C3 / (r**2)
+#         return Vec(force * dx / r, force * dy / r)
     
     
-    def f_spring(self, u, v):
-        dx = v.vec.x - u.vec.x
-        dy = v.vec.y - u.vec.y
-        r = math.sqrt(dx**2 + dy**2)
-        force = C1 * (r - C2)
-        return Vec(force * dx / r, force * dy / r)
+#     def f_spring(self, u, v):
+#         dx = v.vec.x - u.vec.x
+#         dy = v.vec.y - u.vec.y
+#         r = math.sqrt(dx**2 + dy**2)
+#         force = C1 * (r - C2)
+#         return Vec(force * dx / r, force * dy / r)
 
     
     
-    def force_layout(self):
-        forces = {node: Vec(0, 0) for node in self.nodes}
+#     def force_layout(self):
+#         forces = {node: Vec(0, 0) for node in self.nodes}
 
-        for node in self.nodes:
-            for target in node.targets:
-                spring_force = self.f_spring(node, target)
-                forces[node].x += spring_force.x
-                forces[node].y += spring_force.y
+#         for node in self.nodes:
+#             for target in node.targets:
+#                 spring_force = self.f_spring(node, target)
+#                 forces[node].x += spring_force.x
+#                 forces[node].y += spring_force.y
 
-        for i, node in enumerate(self.nodes):
-            for other_node in self.nodes[i+1:]:
-                ball_force = self.f_ball(node, other_node)
-                forces[node].x += ball_force.x
-                forces[node].y += ball_force.y
-                forces[other_node].x -= ball_force.x
-                forces[other_node].y -= ball_force.y
+#         for i, node in enumerate(self.nodes):
+#             for other_node in self.nodes[i+1:]:
+#                 ball_force = self.f_ball(node, other_node)
+#                 forces[node].x += ball_force.x
+#                 forces[node].y += ball_force.y
+#                 forces[other_node].x -= ball_force.x
+#                 forces[other_node].y -= ball_force.y
 
-        for node in self.nodes:
-            node.vec.x += C4 * forces[node].x
-            node.vec.y += C4 * forces[node].y
+#         for node in self.nodes:
+#             node.vec.x += C4 * forces[node].x
+#             node.vec.y += C4 * forces[node].y
 
-root = Tk()
-gui = GUI(root)
+# root = Tk()
+# gui = GUI(root)
 
-g = Graph()
-n1 = g.add("1")
-n2 = g.add("2")
-n3 = g.add("3")
-n4 = g.add("4")
-n5 = g.add("5")
-n6 = g.add("6")
-n7 = g.add("7")
-n1.to(n2, n3, n4, n5)
-n2.to(n5)
-n3.to(n2, n4)
-n6.to(n4, n1, n7)
-n7.to(n5, n1)
+# g = Graph()
+# n1 = g.add("1")
+# n2 = g.add("2")
+# n3 = g.add("3")
+# n4 = g.add("4")
+# n5 = g.add("5")
+# n6 = g.add("6")
+# n7 = g.add("7")
+# n1.to(n2, n3, n4, n5)
+# n2.to(n5)
+# n3.to(n2, n4)
+# n6.to(n4, n1, n7)
+# n7.to(n5, n1)
 
-gui.nodes = g.nodes
+# gui.nodes = g.nodes
 
-root.mainloop()
+# root.mainloop()
+
+import operator
+
+OP_NAMES = {0: 'push', 1: 'op', 2: 'call', 3: 'is', 4: 'to', 5: 'exit'}
+
+def not_implemented(vm):
+    raise RuntimeError('Not implemented!')
+
+LIB = { # Для быстрого задания большинства операций полезен модуль operator
+    '+': operator.add,
+    '-': operator.sub,
+    '*': operator.mul,
+    '/': operator.floordiv, # Целочисленный вариант деления
+    '%': operator.mod,
+    '&':  operator.and_,
+    '|': operator.or_,
+    '^': operator.xor,
+    '<': operator.lt,
+    '>': operator.gt,
+    '=': operator.eq,
+    '<<': operator.lshift,
+    '>>': operator.rshift,
+    'if': not_implemented,
+    'for': not_implemented,
+    '.': not_implemented,
+    'emit': not_implemented,
+    '?': not_implemented,
+    'array': not_implemented,
+    '@': not_implemented,
+    '!': not_implemented
+}
+
+
+
+# def disasm(code):
+#     pc = 0
+#     while pc < len(code):
+#         op = code[pc]
+#         pc += 1
+#         if op == 0: # PUSH
+#             val = code[pc]
+#             pc += 1
+#             print('  push', val)
+#         elif op == 1: # OP
+#             val = code[pc]
+#             pc += 1
+#             print('  op', chr(val))
+#         elif op == 2: # CALL
+#             val = code[pc]
+#             pc += 1
+#             print('  call', val)
+#         elif op == 3: # IS
+#             print('  is')
+#         elif op == 4: # TO
+#             print('  to')
+#         elif op == 5: # EXIT
+#             val = code[pc]
+#             pc += 1
+#             print('  exit', val)
+#         else:
+#             print('Неизвестная операция:', op)
+# disasm([0, 16, 16, 1, 121, 5])
+# # Пример использования:
+# # >>> disasm([0, 16, 16, 1, 121, 5])
+# # entry:
+# #   push 2
+# #   push 2
+# #   op '+'
+# #   op '.'
+# #   exit 0
+
+def disasm(bytecode):
+    pc = 0
+    instructions = []
+
+    while pc < len(bytecode):
+        opcode = bytecode[pc]
+        pc += 1
+
+        if opcode == 0:  # PUSH
+            value = bytecode[pc]
+            pc += 1
+            instructions.append(f"push {value}")
+        elif opcode == 1:  # ADD
+            instructions.append("op '+'")
+        elif opcode == 2:  # SUB
+            instructions.append("op '-'")
+        elif opcode == 3:  # MUL
+            instructions.append("op '*'")
+        elif opcode == 4:  # DIV
+            instructions.append("op '/'")
+        elif opcode == 5:  # PRINT
+            instructions.append("op '.'")
+
+    instructions.insert(0, "entry:")
+    instructions.append("exit 0")
+
+    for instr in instructions:
+        print(f"  {instr}")
+
+bytecode = [0, 2, 0, 2, 1, 121, 5]
+disasm(bytecode)
