@@ -1,26 +1,32 @@
-
-
-
-
-
-
-#Второе по популярности решение
+#Первое по популярности решение
 def main(s):
-    k = ["do", "let", "ne;", "<: ", " :>", "::=", ".", "\n"]
-    list_of_tuples = []
+    symbols = ["do", "let", "ne;", "<: ", " :>", "::=", ".", "\\n"]
     input_string = s
-    input_string = input_string.replace(k[0], " ").replace(k[1], " ")
-    input_string = input_string.replace(k[2], " ").replace(k[3], " ")
-    input_string = input_string.replace(k[4], " ").replace(k[5], " ")
-    input_string = input_string.replace(k[6], " ").replace(k[7], " ")
-    input_string = input_string.split(" ")
-    new_list = []
-    for i in input_string:
-        if i != "":
-            new_list.append(i)
-    for i in range(0, len(new_list) - 1, 2):
-        list_of_tuples.append((new_list[i], int(new_list[i + 1])))
+    for symbol in symbols:
+        input_string = input_string.replace(symbol, " ")
+    input_list = input_string.split()
+    list_of_tuples = [(input_list[i], int(input_list[i + 1])) for i in range(0, len(input_list) - 1, 2)]
     return list_of_tuples
+
+
+
+##Второе по популярности решение
+# def main(s):
+#     k = ["do", "let", "ne;", "<: ", " :>", "::=", ".", "\n"]
+#     list_of_tuples = []
+#     input_string = s
+#     input_string = input_string.replace(k[0], " ").replace(k[1], " ")
+#     input_string = input_string.replace(k[2], " ").replace(k[3], " ")
+#     input_string = input_string.replace(k[4], " ").replace(k[5], " ")
+#     input_string = input_string.replace(k[6], " ").replace(k[7], " ")
+#     input_string = input_string.split(" ")
+#     new_list = []
+#     for i in input_string:
+#         if i != "":
+#             new_list.append(i)
+#     for i in range(0, len(new_list) - 1, 2):
+#         list_of_tuples.append((new_list[i], int(new_list[i + 1])))
+#     return list_of_tuples
 
 
 
