@@ -855,6 +855,16 @@ class VM:
                         print(self.stack.pop())
                     elif operation == 'emit':
                         print(chr(self.stack.pop()), end='')
+                    elif operation == 'to':
+                        var_name = self.stack.pop()
+                        var_value = self.stack.pop()
+                        self.local_scope[-1][var_name] = var_value
+                    elif operation == 'from':
+                        var_name = self.stack.pop()
+                        for scope in reversed(self.local_scope):
+                            if var_name in scope:
+                                self.stack.append(scope[var_name])
+                                break
                 self.pc += 1
             elif op_code == 2:
                 function_address = self.scope.get(arg, (0,0))[1]
@@ -867,7 +877,9 @@ class VM:
             elif op_code == 3:
                 self.scope[arg] = ('function', self.pc + 1)
                 self.pc += 1
-            elif op_code == 5:
+            
+        
+            elif op_code == 4:
                 if self.call_stack:
                     self.pc = self.call_stack.pop() + 1
                 else:
@@ -876,15 +888,11 @@ class VM:
                 print("Unknown operation")
                 break
 
-LIB.extend(['+', '.', 'emit'])
+LIB.extend(['+', '.', 'emit','to','from'])
 
-bytecode = [
-    57, 8440, 129, 8704, 129, 8688, 129, 8600, 129, 8704, 129, 8576, 129, 8672,
-    129, 8672, 129, 8576, 129, 256, 129, 8728, 129, 8712, 129, 8696, 129, 8616,
-    129, 8768, 129, 8680, 129, 8688, 129, 256, 129, 8592, 129, 8792, 129, 8696,
-    129, 8688, 129, 8664, 129, 8680, 129, 8616, 129, 8680, 129, 8576, 129, 264,
-    129, 5, 0, 3, 2, 5
-]
+bytecode = [31, 256, 129, 5, 8, 4, 16, 12, 24, 20, 2, 121, 26, 10, 121, 26, 18, 121, 26, 5,
+ 32, 4, 40, 12, 34, 2, 121, 26, 10, 121, 26, 5, 0, 27, 48, 4, 24, 35, 152, 43,
+ 42, 2, 121, 26, 5]
 
 vm = VM(bytecode)
 vm.run()
