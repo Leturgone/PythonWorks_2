@@ -838,34 +838,3 @@ LIB = { # Для быстрого задания большинства опер
 # #   op '.'
 # #   exit 0
 
-def disasm(bytecode):
-    pc = 0
-    instructions = []
-
-    while pc < len(bytecode):
-        opcode = bytecode[pc]
-        pc += 1
-
-        if opcode == 0:  # PUSH
-            value = bytecode[pc]
-            pc += 1
-            instructions.append(f"push {value}")
-        elif opcode == 1:  # ADD
-            instructions.append("op '+'")
-        elif opcode == 2:  # SUB
-            instructions.append("op '-'")
-        elif opcode == 3:  # MUL
-            instructions.append("op '*'")
-        elif opcode == 4:  # DIV
-            instructions.append("op '/'")
-        elif opcode == 5:  # PRINT
-            instructions.append("op '.'")
-
-    instructions.insert(0, "entry:")
-    instructions.append("exit 0")
-
-    for instr in instructions:
-        print(f"  {instr}")
-
-bytecode = [0, 2, 0, 2, 1, 121, 5]
-disasm(bytecode)
