@@ -10,6 +10,10 @@
 
 
 
+
+
+
+
 #----------------- Лирическое отступление -----------------
 
 # Если бы вы знали как меня бесит когнетивная сложность, вы бы расплакались
@@ -32,6 +36,74 @@
 
 #УПД2
 # Я устал и хочу спать, опять сложность, если тут пандасом надо, я не знаю что я сделаю
+
+#У них нет пандаса.......
+ 
+# Пусть оно будет тут, я зря что ли мучался
+
+# import pandas as pd
+
+
+# def remove_empty_columns_and_rows(df):
+#     df = df.dropna(how="all")  # Удаление пустых строк
+#     df = df.dropna(axis=1, how="all")  # Удаление пустых столбцов
+#     return df
+
+
+# def third_case(cell):
+#     cell = cell.replace(" ", "")
+#     cell = cell.replace("(", "")
+#     cell = cell.replace(")", "-")
+#     cell = cell.replace("-", " ").split()
+#     cell = "-".join(
+#         [cell[0], cell[1], cell[2]]
+#         ) + cell[3]
+#     return cell
+
+
+# def one_case(cell):
+#     year, month, day = cell.split(
+#         "-"
+#         )
+#     cell = "/".join(
+#         [day, month, year[2:]]
+#         )  # Соединить день, месяц и две последние цифры года
+#     return cell
+
+
+# def zero_case(cell):
+#     cell = cell.replace(",", "").split()
+#     cell = (
+#         " ".join(
+#             [cell[0], cell[1][0]]
+#         ) + "."
+#     )
+#     return cell
+
+# def transform_cell_content(df):
+#     # Преобразование содержимого ячеек
+#     for i in range(len(df)):
+#         for j in range(len(df.iloc[i])):
+#             cell = str(df.iloc[i, j])
+#             if j == 0:
+#                 cell = zero_case(cell)
+#             elif j == 1:
+#                 cell = one_case(cell)
+#             elif j == 2:
+#                 cell = cell.replace("@", " ").split()
+#                 cell = cell[0]
+#             elif j == 3:
+#                 cell = third_case(cell)
+#             df.iloc[i, j] = cell
+#     return df
+
+# def main(table):
+#     df = pd.DataFrame(table)
+#     df = remove_empty_columns_and_rows(df)
+#     df = transform_cell_content(df)
+#     df = df.transpose()
+#     return df.values.tolist()
+
 
 #------------------------------------------------------
 
