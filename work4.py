@@ -879,7 +879,7 @@ class VM:
                 self.pc += 1
             
         
-            elif op_code == 4:
+            elif op_code == 5:
                 if self.call_stack:
                     self.pc = self.call_stack.pop() + 1
                 else:
