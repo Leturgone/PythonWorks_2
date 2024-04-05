@@ -25,3 +25,7 @@
 Задание 9
 ![изображение](https://github.com/Leturgone/PythonWorks_2/assets/145966860/87918f60-38f0-4ee2-bfd7-7018a96a5c1b)
 
+Задание 10
+![изображение](https://github.com/Leturgone/PythonWorks_2/assets/145966860/715bcae8-5b5c-452a-8267-19fc97f29f45)
+
+
