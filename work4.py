@@ -768,131 +768,159 @@
 
 # root.mainloop()
 
-import operator
+# import operator
 
-# OP_NAMES = {0: 'push', 1: 'op', 2: 'call', 3: 'is', 4: 'to', 5: 'exit'}
+# # OP_NAMES = {0: 'push', 1: 'op', 2: 'call', 3: 'is', 4: 'to', 5: 'exit'}
 
-# def not_implemented(vm):
-#     raise RuntimeError('Not implemented!')
+# # def not_implemented(vm):
+# #     raise RuntimeError('Not implemented!')
 
-# LIB = { # Для быстрого задания большинства операций полезен модуль operator
-#     '+': operator.add,
-#     '-': operator.sub,
-#     '*': operator.mul,
-#     '/': operator.floordiv, # Целочисленный вариант деления
-#     '%': operator.mod,
-#     '&':  operator.and_,
-#     '|': operator.or_,
-#     '^': operator.xor,
-#     '<': operator.lt,
-#     '>': operator.gt,
-#     '=': operator.eq,
-#     '<<': operator.lshift,
-#     '>>': operator.rshift,
-#     'if': not_implemented,
-#     'for': not_implemented,
-#     '.': lambda vm: print(vm.stack.pop()),
-#     'emit': not_implemented,
-#     '?': not_implemented,
-#     'array': not_implemented,
-#     '@': not_implemented,
-#     '!': not_implemented
-# }
+# # LIB = { # Для быстрого задания большинства операций полезен модуль operator
+# #     '+': operator.add,
+# #     '-': operator.sub,
+# #     '*': operator.mul,
+# #     '/': operator.floordiv, # Целочисленный вариант деления
+# #     '%': operator.mod,
+# #     '&':  operator.and_,
+# #     '|': operator.or_,
+# #     '^': operator.xor,
+# #     '<': operator.lt,
+# #     '>': operator.gt,
+# #     '=': operator.eq,
+# #     '<<': operator.lshift,
+# #     '>>': operator.rshift,
+# #     'if': not_implemented,
+# #     'for': not_implemented,
+# #     '.': lambda vm: print(vm.stack.pop()),
+# #     'emit': not_implemented,
+# #     '?': not_implemented,
+# #     'array': not_implemented,
+# #     '@': not_implemented,
+# #     '!': not_implemented
+# # }
 
 
+
+# # class VM:
+# #     def __init__(self, code):
+# #         self.stack = []
+# #         self.code = code
+# #         self.pc = 0
+# #     def run(self):
+# #         while self.pc < len(self.code):
+# #             op = self.code[self.pc]
+# #             self.pc += 1
+# #             if op in LIB:
+# #                 LIB[op]()
+# #             else:
+# #                 print("Invalid opcode:", op)
+
+# # def test_VM():
+# #     bytecode = [0, 2, 0, 2, 1, 2] 
+# #     vm = VM(bytecode)
+# #     vm.run()
+
+# # test_VM()
+
+# LIB = [
+#     '+', '-', '*', '/', '%', '&', '|', '^', '<', '>', '=', '<<', '>>', 'if',
+#     'for', '.', 'emit', '?', 'array', '@', '!'
+# ]
 
 # class VM:
 #     def __init__(self, code):
 #         self.stack = []
 #         self.code = code
 #         self.pc = 0
+#         self.scope = {} 
+#         self.call_stack = []
+
 #     def run(self):
 #         while self.pc < len(self.code):
-#             op = self.code[self.pc]
-#             self.pc += 1
-#             if op in LIB:
-#                 LIB[op]()
-#             else:
-#                 print("Invalid opcode:", op)
-
-# def test_VM():
-#     bytecode = [0, 2, 0, 2, 1, 2] 
-#     vm = VM(bytecode)
-#     vm.run()
-
-# test_VM()
-
-LIB = [
-    '+', '-', '*', '/', '%', '&', '|', '^', '<', '>', '=', '<<', '>>', 'if',
-    'for', '.', 'emit', '?', 'array', '@', '!'
-]
-
-class VM:
-    def __init__(self, code):
-        self.stack = []
-        self.code = code
-        self.pc = 0
-        self.scope = {} 
-        self.call_stack = []
-
-    def run(self):
-        while self.pc < len(self.code):
-            instruction = self.code[self.pc]
-            op_code = instruction & 0b111
-            arg = instruction >> 3
+#             instruction = self.code[self.pc]
+#             op_code = instruction & 0b111
+#             arg = instruction >> 3
             
-            if op_code == 0:
-                self.stack.append(arg)
-                self.pc += 1
-            elif op_code == 1:
-                if arg < len(LIB):
-                    operation = LIB[arg]
-                    if operation == '+':
-                        a = self.stack.pop()
-                        b = self.stack.pop()
-                        self.stack.append(a + b)
-                    elif operation == '.':
-                        print(self.stack.pop())
-                    elif operation == 'emit':
-                        print(chr(self.stack.pop()), end='')
-                    elif operation == 'to':
-                        var_name = self.stack.pop()
-                        var_value = self.stack.pop()
-                        self.local_scope[-1][var_name] = var_value
-                    elif operation == 'from':
-                        var_name = self.stack.pop()
-                        for scope in reversed(self.local_scope):
-                            if var_name in scope:
-                                self.stack.append(scope[var_name])
-                                break
-                self.pc += 1
-            elif op_code == 2:
-                function_address = self.scope.get(arg, (0,0))[1]
-                if function_address:
-                    self.call_stack.append(self.pc)
-                    self.pc = function_address
-                else:
-                    print("Function not found")
-                    break
-            elif op_code == 3:
-                self.scope[arg] = ('function', self.pc + 1)
-                self.pc += 1
+#             if op_code == 0:
+#                 self.stack.append(arg)
+#                 self.pc += 1
+#             elif op_code == 1:
+#                 if arg < len(LIB):
+#                     operation = LIB[arg]
+#                     if operation == '+':
+#                         a = self.stack.pop()
+#                         b = self.stack.pop()
+#                         self.stack.append(a + b)
+#                     elif operation == '.':
+#                         print(self.stack.pop())
+#                     elif operation == 'emit':
+#                         print(chr(self.stack.pop()), end='')
+#                     elif operation == 'to':
+#                         var_name = self.stack.pop()
+#                         var_value = self.stack.pop()
+#                         self.local_scope[-1][var_name] = var_value
+#                     elif operation == 'from':
+#                         var_name = self.stack.pop()
+#                         for scope in reversed(self.local_scope):
+#                             if var_name in scope:
+#                                 self.stack.append(scope[var_name])
+#                                 break
+#                 self.pc += 1
+#             elif op_code == 2:
+#                 function_address = self.scope.get(arg, (0,0))[1]
+#                 if function_address:
+#                     self.call_stack.append(self.pc)
+#                     self.pc = function_address
+#                 else:
+#                     print("Function not found")
+#                     break
+#             elif op_code == 3:
+#                 self.scope[arg] = ('function', self.pc + 1)
+#                 self.pc += 1
             
         
-            elif op_code == 5:
-                if self.call_stack:
-                    self.pc = self.call_stack.pop() + 1
-                else:
-                    break
-            else:
-                print("Unknown operation")
-                break
+#             elif op_code == 5:
+#                 if self.call_stack:
+#                     self.pc = self.call_stack.pop() + 1
+#                 else:
+#                     break
+#             else:
+#                 print("Unknown operation")
+#                 break
 
-LIB.extend(['+', '.', 'emit','to','from'])
+# LIB.extend(['+', '.', 'emit','to','from'])
 
-bytecode = [31, 256, 129, 5, 8, 4, 16, 12, 24, 20, 2, 121, 26, 10, 121, 26, 18, 121, 26, 5,
- 32, 4, 40, 12, 34, 2, 121, 26, 10, 121, 26, 5, 0, 27, 48, 4, 24, 35, 152, 43,
- 42, 2, 121, 26, 5]
+# bytecode = [31, 256, 129, 5, 8, 4, 16, 12, 24, 20, 2, 121, 26, 10, 121, 26, 18, 121, 26, 5,
+#  32, 4, 40, 12, 34, 2, 121, 26, 10, 121, 26, 5, 0, 27, 48, 4, 24, 35, 152, 43,
+#  42, 2, 121, 26, 5]
 
-vm = VM(bytecode)
-vm.run()
+# vm = VM(bytecode)
+# vm.run()
+
+import pytest
+import math
+def distance(x1, y1, x2, y2):
+    return math.sqrt( (x2 - x1)**2 + (y2 - y1)**2 )
+def triangle_type(x1, y1, x2, y2, x3, y3):
+    a = distance(x1, y1, x2, y2)
+    b = distance(x2, y2, x3, y3)
+    c = distance(x3, y3, x1, y1)
+    if a == b == c:
+        return "равнобедренный"
+    elif a == b or a == c or b == c:
+        return "равносторонний"
+    elif a != b != c:
+        return "разносторонний"
+
+# Parametrized tests
+@pytest.mark.parametrize(
+    "x1,y1,x2,y2,x3,y3,expected",
+    [
+        (5, 6, 1, 1, 2, 2, "равнобедренный"),
+        (0, 0, 1, 0, 0, 1, "равносторонний"),
+        (0, 0, 1, 0, 0, 2, "разносторонний")
+    ]
+)
+def test_triangle_type(x1, y1, x2, y2, x3, y3, expected):
+    assert triangle_type(x1, y1, x2, y2, x3, y3) == expected
+
