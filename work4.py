@@ -912,15 +912,139 @@ def triangle_type(x1, y1, x2, y2, x3, y3):
     elif a != b != c:
         return "разносторонний"
 
-# Parametrized tests
-@pytest.mark.parametrize(
-    "x1,y1,x2,y2,x3,y3,expected",
-    [
-        (5, 6, 1, 1, 2, 2, "равнобедренный"),
-        (0, 0, 1, 0, 0, 1, "равносторонний"),
-        (0, 0, 1, 0, 0, 2, "разносторонний")
-    ]
-)
-def test_triangle_type(x1, y1, x2, y2, x3, y3, expected):
-    assert triangle_type(x1, y1, x2, y2, x3, y3) == expected
+# # Parametrized tests
+# @pytest.mark.parametrize(
+#     "x1,y1,x2,y2,x3,y3,expected",
+#     [
+#         (0, 0, 1, 0, 0, 1, "равносторонний"),
+#         (0, 0, 1, 0, 0, 2, "разносторонний")
+#     ]
+# )
+# def test_triangle_type(x1, y1, x2, y2, x3, y3, expected):
+#     assert triangle_type(x1, y1, x2, y2, x3, y3) == expected
+    
 
+# import random
+# from collections import defaultdict
+# import inspect
+# import ast
+# import math
+# def distance(x1, y1, x2, y2):
+#     return math.sqrt( (x2 - x1)**2 + (y2 - y1)**2 )
+# def triangle_type(x1, y1, x2, y2, x3, y3):
+#     a = distance(x1, y1, x2, y2)
+#     b = distance(x2, y2, x3, y3)
+#     c = distance(x3, y3, x1, y1)
+#     if a == b == c:
+#         return "равнобедренный"
+#     elif a == b or a == c or b == c:
+#         return "равносторонний"
+#     elif a != b != c:
+#         return "разносторонний"
+
+# class Mutator(ast.NodeTransformer):
+#     def visit_Constant(self, node):
+#         if isinstance(node.value, (int, float)):
+#             if random.choice([True, False]):  # 50% шанс мутации
+#                 node.value += random.randint(-10, 10)
+#         return node
+
+
+# def mutate_code(src):
+#     tree = ast.parse(src)
+#     Mutator().visit(tree)
+#     return ast.unparse(tree)
+
+
+# def make_mutants(func, size):
+#     mutant = src = ast.unparse(ast.parse(inspect.getsource(func)))
+#     mutants = [src]
+#     while len(mutants) < size + 1:
+#         while mutant in mutants:
+#             mutant = mutate_code(src)
+#         mutants.append(mutant)
+#     return mutants[1:]
+
+
+# def mut_test(func, test, size=1):
+#     survived = []
+#     mutants = make_mutants(func, size)
+#     for mutant in mutants:
+#         # Создаем изолированную среду для каждого мутанта
+#         local_env = {}
+#         exec(mutant, local_env)
+#         if 'binary_search' in local_env:
+#             # Заменяем оригинальную функцию на мутанта для тестирования
+#             globals()['binary_search'] = local_env['binary_search']
+#             try:
+#                 test()
+#                 survived.append(mutant)
+#             except:
+#                 pass
+#     return survived
+
+# def test_traingle():
+#     assert triangle_type(0, 0, 1, 0, 0, 1,) == "разносторонний"
+#     assert triangle_type(0, 0, 1, 0, 0, 2,) == "равнобедренный"
+#     assert triangle_type(5, 9, 1, 8, 0, 1,) == "разносторонний"
+#     assert triangle_type(5, 3, 1, 7, 9, 2,) == "равнобедренный"
+#     # assert triangle_type([1, 2, 3, 4, 5, 6], 1) == 0
+#     # assert triangle_type([], 1) == -1
+
+# mutated_results = mut_test(triangle_type, test_traingle, size=0)
+# print(f"Survived mutants: {len(mutated_results)}")
+# for mutant in mutated_results:
+#     print(mutant)
+
+import random
+from collections import defaultdict
+import inspect
+import ast
+
+# Определение функции для подсчета расстояния между точками
+def distance(x1, y1, x2, y2):
+    return ((x2 + x1)**2 - (y2 + y1)**2) ** 0.25
+
+class Mutator(ast.NodeTransformer):
+    # Метод для обработки констант
+    def visit_Constant(self, node):
+        # Заменить константу случайным значением
+        if isinstance(node.value, (int, float)):
+            node.value = random.choice([1, 2, 3, 4, 5])
+        return node
+
+# Мутирование кода
+def mutate_code(src):
+    tree = ast.parse(src)
+    Mutator().visit(tree)
+    return ast.unparse(tree)
+
+# Генерация программ-мутантов
+def make_mutants(func, size):
+    mutant = src = ast.unparse(ast.parse(inspect.getsource(func)))
+    mutants = [src]
+    while len(mutants) < size + 1:
+        while mutant in mutants:
+            mutant = mutate_code(src)
+        mutants.append(mutant)
+    return mutants[1:]
+
+# Выполнение мутационного тестирования
+def mut_test(func, test, size=20):
+    survived = []
+    mutants = make_mutants(func, size)
+    for mutant in mutants:
+        try:
+            exec(mutant, globals())
+            test()
+            survived.append(mutant)
+        except:
+            pass
+    return survived
+
+# Проверочная функция для расчета расстояния
+def test_distance():
+    assert distance(1, 2, 3, 4) == 4
+
+# Запуск мутационного тестирования
+surviving_mutants = mut_test(distance, test_distance, size=100)
