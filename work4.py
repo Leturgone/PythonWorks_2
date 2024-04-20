@@ -1050,32 +1050,102 @@
 # # Запуск мутационного тестирования
 # surviving_mutants = mut_test(distance, test_distance, size=100)
 
-import deal
-import math
+# import deal
+# import math
+#
+# @deal.pre(lambda x1, y1, x2, y2, x3, y3: all(isinstance(i, (int, float)) for i in [x1, y1, x2, y2, x3, y3]), message='Все входные значения должны быть числами.')
+#
+# @deal.has()
+# def triangle_type(x1, y1, x2, y2, x3, y3):
+#     def distance(x1, y1, x2, y2):
+#         return math.sqrt( (x2 - x1)**2 + (y2 - y1)**2 )
+#
+#     a = distance(x1, y1, x2, y2)
+#     b = distance(x2, y2, x3, y3)
+#     c = distance(x3, y3, x1, y1)
+#
+#     @deal.ensure(lambda result: result in ["равнобедренный", "равносторонний", "разносторонний"])
+#     def determine_type():
+#         if a == b == c:
+#             return "равнобедренный"
+#         elif a == b or a == c or b == c:
+#             return "равносторонний"
+#         elif a != b != c:
+#             return "разносторонний"
+#
+#     return determine_type()
+# def test_triangle_type():
+#     assert triangle_type('e', 0, 1, 0, 0, 1) == "равнобедренный"
+#     assert triangle_type(0, 0, 1, 0, 0, 2) == "равносторонний"
+#     assert triangle_type(0, 0, 1, 0, 0, 3) == "разносторонний"
 
-@deal.pre(lambda x1, y1, x2, y2, x3, y3: all(isinstance(i, (int, float)) for i in [x1, y1, x2, y2, x3, y3]), message='Все входные значения должны быть числами.')
 
-@deal.has()
-def triangle_type(x1, y1, x2, y2, x3, y3):
-    def distance(x1, y1, x2, y2):
-        return math.sqrt( (x2 - x1)**2 + (y2 - y1)**2 )
 
-    a = distance(x1, y1, x2, y2)
-    b = distance(x2, y2, x3, y3)
-    c = distance(x3, y3, x1, y1)
 
-    @deal.ensure(lambda result: result in ["равнобедренный", "равносторонний", "разносторонний"])
-    def determine_type():
-        if a == b == c:
-            return "равнобедренный"
-        elif a == b or a == c or b == c:
-            return "равносторонний"
-        elif a != b != c:
-            return "разносторонний"
+# 5.1. (уровень сложности: средний)
 
-    return determine_type()
-def test_triangle_type():
-    assert triangle_type('e', 0, 1, 0, 0, 1) == "равнобедренный"
-    assert triangle_type(0, 0, 1, 0, 0, 2) == "равносторонний"
-    assert triangle_type(0, 0, 1, 0, 0, 3) == "разносторонний"
+# Научитесь работать с библиотекой hypothesis. Протестируйте функцию distance.
 
+# 5.2. (уровень сложности: средний)
+
+# Реализуйте тестирование функций для RLE.
+
+# 5.3. (уровень сложности: высокий)
+
+# Реализуйте тестирование для деревьев выражений из предыдущей практики, для одного из «посетителей».
+
+# 5.4. (уровень сложности: высокий)
+
+# Используйте тестирование по модели для проверки реализации банковского счета (7)
+
+
+# from hypothesis import given, strategies as st
+
+
+# def distance(x1, y1, x2, y2):
+#     return ((x2 + x1) ** 2 - (y2 + y1) ** 2) ** 0.25
+
+
+# @given(st.integers(), st.integers(), st.integers(), st.integers())
+# def test_distance_non_negative(x1, y1, x2, y2):
+#     assert distance(x1, y1, x2, y2) >= 0, "Distance should be non-negative"
+
+
+
+# test_distance_non_negative()
+from hypothesis import given
+from hypothesis.strategies import binary
+
+def encode_rle(data):
+    encoded = bytes()
+    count = 0
+    last_char = data[-1]
+    for i in range(1, len(data) + 1):
+        if data[i] == last_char:
+            count += 1
+        else:
+            encoded.append(data[i])
+            encoded.append(count)
+            count = 1
+            last_char = data[i]
+    encoded.append(count)
+    encoded.append(last_char)
+    return bytes(encoded)
+
+def decode_rle(data):
+    decoded = bytes()
+    i = 1
+    while i < len(data):
+        count = data[i - 1]
+        char = data[i]
+        decoded.extend([char]*count)
+        i += 1
+    return bytes(decoded)
+
+@given(binary())
+def test_rle_idempotent(data):
+    encoded = encode_rle(data)
+    decoded = decode_rle(encoded)
+    assert decoded == data, f"Decoded data does not match original: {decoded} vs {data}"
+
+test_rle_idempotent()
