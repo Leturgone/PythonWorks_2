@@ -1112,40 +1112,115 @@
 
 
 
-# test_distance_non_negative()
-from hypothesis import given
-from hypothesis.strategies import binary
+# # test_distance_non_negative()
+# from hypothesis import given
+# from hypothesis.strategies import binary
 
-def encode_rle(data):
-    encoded = bytes()
-    count = 0
-    last_char = data[-1]
-    for i in range(1, len(data) + 1):
-        if data[i] == last_char:
-            count += 1
-        else:
-            encoded.append(data[i])
-            encoded.append(count)
-            count = 1
-            last_char = data[i]
-    encoded.append(count)
-    encoded.append(last_char)
-    return bytes(encoded)
+# def encode_rle(data):
+#     encoded = bytes()
+#     count = 0
+#     last_char = data[-1]
+#     for i in range(1, len(data) + 1):
+#         if data[i] == last_char:
+#             count += 1
+#         else:
+#             encoded.append(data[i])
+#             encoded.append(count)
+#             count = 1
+#             last_char = data[i]
+#     encoded.append(count)
+#     encoded.append(last_char)
+#     return bytes(encoded)
 
-def decode_rle(data):
-    decoded = bytes()
-    i = 1
-    while i < len(data):
-        count = data[i - 1]
-        char = data[i]
-        decoded.extend([char]*count)
-        i += 1
-    return bytes(decoded)
+# def decode_rle(data):
+#     decoded = bytes()
+#     i = 1
+#     while i < len(data):
+#         count = data[i - 1]
+#         char = data[i]
+#         decoded.extend([char]*count)
+#         i += 1
+#     return bytes(decoded)
 
-@given(binary())
-def test_rle_idempotent(data):
-    encoded = encode_rle(data)
-    decoded = decode_rle(encoded)
-    assert decoded == data, f"Decoded data does not match original: {decoded} vs {data}"
+# @given(binary())
+# def test_rle_idempotent(data):
+#     encoded = encode_rle(data)
+#     decoded = decode_rle(encoded)
+#     assert decoded == data, f"Decoded data does not match original: {decoded} vs {data}"
 
-test_rle_idempotent()
+# test_rle_idempotent()
+
+# Функция перехода из комнаты в комнату
+def go(room):
+    def func(state):
+        return dict(state, room=room)
+    return func
+
+
+# Структура игры. Комнаты и допустимые в них действия
+game = {
+    'room0': dict(
+        left=go('room1'),
+        up=go('room2'),
+        right=go('room3')
+    ),
+    'room1': dict(
+        up=go('room2'),
+        right=go('room0')
+    ),
+    'room2': dict(
+    ),
+    'room3': dict(
+        up=go('room4'),
+        right=go('room5')
+    ),
+    'room4': dict(
+        down=go('room3'),
+        right=go('room5')
+    ),
+    'room5': dict(
+        up=go('room4'),
+        left=go('room3')
+    )
+}
+
+# Стартовое состояние
+START_STATE = dict(room='room0')
+
+
+def is_goal_state(state):
+    '''
+    Проверить, является ли состояние целевым.
+    '''
+    return state['room'] == 'room2'
+
+
+def get_current_room(state):
+    '''
+    Выдать комнату, в которой находится игрок.
+    '''
+    return state['room']
+
+def make_model(game, start_state):
+    graph = {}
+    visited = set()
+
+    def dfs(room):
+        if room in visited:
+            return
+        visited.add(room)
+        graph[room] = list(game[room].keys())
+
+        for action in game[room].values():
+            new_state = action(start_state)
+            dfs(get_current_room(new_state))
+
+    dfs(get_current_room(start_state))
+
+    return graph
+
+def print_graph(graph):
+    for room, actions in graph.items():
+        print(f"{room}: {', '.join(actions)}")
+
+print_graph(make_model(game,START_STATE))
