@@ -1150,77 +1150,121 @@
 
 # test_rle_idempotent()
 
-# Функция перехода из комнаты в комнату
-def go(room):
-    def func(state):
-        return dict(state, room=room)
-    return func
+# # Функция перехода из комнаты в комнату
+# def go(room):
+#     def func(state):
+#         return dict(state, room=room)
+#     return func
 
 
-# Структура игры. Комнаты и допустимые в них действия
-game = {
-    'room0': dict(
-        left=go('room1'),
-        up=go('room2'),
-        right=go('room3')
-    ),
-    'room1': dict(
-        up=go('room2'),
-        right=go('room0')
-    ),
-    'room2': dict(
-    ),
-    'room3': dict(
-        up=go('room4'),
-        right=go('room5')
-    ),
-    'room4': dict(
-        down=go('room3'),
-        right=go('room5')
-    ),
-    'room5': dict(
-        up=go('room4'),
-        left=go('room3')
-    )
-}
+# # Структура игры. Комнаты и допустимые в них действия
+# game = {
+#     'room0': dict(
+#         left=go('room1'),
+#         up=go('room2'),
+#         right=go('room3')
+#     ),
+#     'room1': dict(
+#         up=go('room2'),
+#         right=go('room0')
+#     ),
+#     'room2': dict(
+#     ),
+#     'room3': dict(
+#         up=go('room4'),
+#         right=go('room5')
+#     ),
+#     'room4': dict(
+#         down=go('room3'),
+#         right=go('room5')
+#     ),
+#     'room5': dict(
+#         up=go('room4'),
+#         left=go('room3')
+#     )
+# }
 
-# Стартовое состояние
-START_STATE = dict(room='room0')
-
-
-def is_goal_state(state):
-    '''
-    Проверить, является ли состояние целевым.
-    '''
-    return state['room'] == 'room2'
+# # Стартовое состояние
+# START_STATE = dict(room='room0')
 
 
-def get_current_room(state):
-    '''
-    Выдать комнату, в которой находится игрок.
-    '''
-    return state['room']
+# def is_goal_state(state):
+#     '''
+#     Проверить, является ли состояние целевым.
+#     '''
+#     return state['room'] == 'room2'
 
-def make_model(game, start_state):
-    graph = {}
-    visited = set()
 
-    def dfs(room):
-        if room in visited:
-            return
-        visited.add(room)
-        graph[room] = list(game[room].keys())
+# def get_current_room(state):
+#     '''
+#     Выдать комнату, в которой находится игрок.
+#     '''
+#     return state['room']
 
-        for action in game[room].values():
-            new_state = action(start_state)
-            dfs(get_current_room(new_state))
+# def make_model(game, start_state):
+#     graph = {}
+#     visited = set()
 
-    dfs(get_current_room(start_state))
+#     def dfs(room):
+#         if room in visited:
+#             return
+#         visited.add(room)
+#         graph[room] = list(game[room].keys())
 
-    return graph
+#         for action in game[room].values():
+#             new_state = action(start_state)
+#             dfs(get_current_room(new_state))
 
-def print_graph(graph):
-    for room, actions in graph.items():
-        print(f"{room}: {', '.join(actions)}")
+#     dfs(get_current_room(start_state))
 
-print_graph(make_model(game,START_STATE))
+#     return graph
+
+# def print_graph(graph):
+#     for room, actions in graph.items():
+#         print(f"{room}: {', '.join(actions)}")
+
+# print_graph(make_model(game,START_STATE))
+
+
+import pytest
+from hypothesis import given
+from hypothesis.strategies import integers
+
+
+class BankAccount:
+    def __init__(self, account_number, balance=0):
+        self.account_number = account_number
+        self.balance = balance
+
+    def deposit(self, amount):
+        self.balance += amount
+        return f"{amount} средств успешно зачислены на счет {self.account_number}"
+
+    def withdraw(self, amount):
+        self.balance -= amount
+        return f"{amount} средств успешно сняты с счета {self.account_number}"
+
+    def check_balance(self):
+        return f"Баланс счета {self.account_number}: {self.balance}"
+
+
+@given(integers(min_value=1, max_value=10000))
+def test_bank_account(amount):
+    # Создаем объект банковского счета
+    account = BankAccount('12345')
+
+    # Тестируем метод deposit
+    deposit_result = account.deposit(amount)
+    assert deposit_result == f"{amount} средств успешно зачислены на счет 12345"
+    assert account.balance == amount
+
+    # Тестируем метод withdraw
+    withdraw_result = account.withdraw(amount)
+    assert withdraw_result == f"{amount} средств успешно сняты с счета 12345"
+    assert account.balance == 0
+
+    # Тестируем метод check_balance
+    balance_result = account.check_balance()
+    assert balance_result == f"Баланс счета 12345: 0"
+
+pytest.main()
