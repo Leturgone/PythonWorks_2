@@ -1274,21 +1274,59 @@
     
 # print(fun(16))
 
-def make_list(*args):
-    def get_next_node(value, next_node=None):
-        return {'znach': value, 'next': next_node}
-    if not args:
-        return None
-    head = get_next_node(args[0])
-    current_node = head
-    for i in range(1, len(args)):
-        new_node = get_next_node(args[i])
-        current_node['next'] = new_node
-        current_node = new_node
-    return head
+# def make_list(*args):
+#     def get_next_node(value, next_node=None):
+#         return {'znach': value, 'next': next_node}
+#     if not args:
+#         return None
+#     head = get_next_node(args[0])
+#     current_node = head
+#     for i in range(1, len(args)):
+#         new_node = get_next_node(args[i])
+#         current_node['next'] = new_node
+#         current_node = new_node
+#     return head
 
-ml = make_list(1,2,3,4,5)
-current_node = ml
-while current_node:
-    print(current_node['znach'])
-    current_node = current_node['next']
+# ml = make_list(1,2,3,4,5)
+# current_node = ml
+# while current_node:
+#     print(current_node['znach'])
+#     current_node = current_node['next']
+
+from typing import NamedTuple, Union
+
+class Num(NamedTuple):
+    value: int
+
+class Add(NamedTuple):
+    left: 'Expr'
+    right: 'Expr'
+
+class Sub(NamedTuple):
+    left: 'Expr'
+    right: 'Expr'
+
+class Mul(NamedTuple):
+    left: 'Expr'
+    right: 'Expr'
+
+Expr = Union[Num, Add, Sub, Mul]
+
+def print_expr(expr: Expr, end = "") -> None:
+    if isinstance(expr, Num):
+        print(expr.value, end=end)
+    elif isinstance(expr, Add):
+        print_expr(expr.left)
+        print("+", end=end)
+        print_expr(expr.right)
+    elif isinstance(expr, Sub):
+        print_expr(expr.left)
+        print("-",end=end)
+        print_expr(expr.right)
+    elif isinstance(expr, Mul):
+        print_expr(expr.left)
+        print("*",end=end)
+        print_expr(expr.right)
+
+expr1 = Mul(Num(44),Add(Num(1), Mul(Num(2), Num(3))))
+print_expr(expr1)
