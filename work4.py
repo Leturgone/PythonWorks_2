@@ -1226,45 +1226,50 @@
 # print_graph(make_model(game,START_STATE))
 
 
-import pytest
-from hypothesis import given
-from hypothesis.strategies import integers
+# import pytest
+# from hypothesis import given
+# from hypothesis.strategies import integers
 
 
-class BankAccount:
-    def __init__(self, account_number, balance=0):
-        self.account_number = account_number
-        self.balance = balance
+# class BankAccount:
+#     def __init__(self, account_number, balance=0):
+#         self.account_number = account_number
+#         self.balance = balance
 
-    def deposit(self, amount):
-        self.balance += amount
-        return f"{amount} средств успешно зачислены на счет {self.account_number}"
+#     def deposit(self, amount):
+#         self.balance += amount
+#         return f"{amount} средств успешно зачислены на счет {self.account_number}"
 
-    def withdraw(self, amount):
-        self.balance -= amount
-        return f"{amount} средств успешно сняты с счета {self.account_number}"
+#     def withdraw(self, amount):
+#         self.balance -= amount
+#         return f"{amount} средств успешно сняты с счета {self.account_number}"
 
-    def check_balance(self):
-        return f"Баланс счета {self.account_number}: {self.balance}"
+#     def check_balance(self):
+#         return f"Баланс счета {self.account_number}: {self.balance}"
 
 
-@given(integers(min_value=1, max_value=10000))
-def test_bank_account(amount):
-    # Создаем объект банковского счета
-    account = BankAccount('12345')
+# @given(integers(min_value=1, max_value=10000))
+# def test_bank_account(amount):
+#     # Создаем объект банковского счета
+#     account = BankAccount('12345')
 
-    # Тестируем метод deposit
-    deposit_result = account.deposit(amount)
-    assert deposit_result == f"{amount} средств успешно зачислены на счет 12345"
-    assert account.balance == amount
+#     # Тестируем метод deposit
+#     deposit_result = account.deposit(amount)
+#     assert deposit_result == f"{amount} средств успешно зачислены на счет 12345"
+#     assert account.balance == amount
 
-    # Тестируем метод withdraw
-    withdraw_result = account.withdraw(amount)
-    assert withdraw_result == f"{amount} средств успешно сняты с счета 12345"
-    assert account.balance == 0
+#     # Тестируем метод withdraw
+#     withdraw_result = account.withdraw(amount)
+#     assert withdraw_result == f"{amount} средств успешно сняты с счета 12345"
+#     assert account.balance == 0
 
-    # Тестируем метод check_balance
-    balance_result = account.check_balance()
-    assert balance_result == f"Баланс счета 12345: 0"
+#     # Тестируем метод check_balance
+#     balance_result = account.check_balance()
+#     assert balance_result == f"Баланс счета 12345: 0"
 
-pytest.main()
+# pytest.main()
+
+def fun(n):
+    return (lambda f: (lambda x: x(x))(lambda y: f(lambda *xs: y(y)(*xs))))(lambda f: lambda x: 1 if x == 0 else x * f(x-1))(n)
+    
+print(fun(16))
