@@ -1269,7 +1269,26 @@
 
 # pytest.main()
 
-def fun(n):
-    return (lambda f: (lambda x: x(x))(lambda y: f(lambda *xs: y(y)(*xs))))(lambda f: lambda x: 1 if x == 0 else x * f(x-1))(n)
+# def fun(n):
+#     return (lambda f: (lambda x: x(x))(lambda y: f(lambda *xs: y(y)(*xs))))(lambda f: lambda x: 1 if x == 0 else x * f(x-1))(n)
     
-print(fun(16))
+# print(fun(16))
+
+def make_list(*args):
+    def get_next_node(value, next_node=None):
+        return {'znach': value, 'next': next_node}
+    if not args:
+        return None
+    head = get_next_node(args[0])
+    current_node = head
+    for i in range(1, len(args)):
+        new_node = get_next_node(args[i])
+        current_node['next'] = new_node
+        current_node = new_node
+    return head
+
+ml = make_list(1,2,3,4,5)
+current_node = ml
+while current_node:
+    print(current_node['znach'])
+    current_node = current_node['next']
