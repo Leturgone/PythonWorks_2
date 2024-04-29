@@ -1293,40 +1293,66 @@
 #     print(current_node['znach'])
 #     current_node = current_node['next']
 
-from typing import NamedTuple, Union
+# from typing import NamedTuple, Union
 
-class Num(NamedTuple):
-    value: int
+# class Num(NamedTuple):
+#     value: int
 
-class Add(NamedTuple):
-    left: 'Expr'
-    right: 'Expr'
+# class Add(NamedTuple):
+#     left: 'Expr'
+#     right: 'Expr'
 
-class Sub(NamedTuple):
-    left: 'Expr'
-    right: 'Expr'
+# class Sub(NamedTuple):
+#     left: 'Expr'
+#     right: 'Expr'
 
-class Mul(NamedTuple):
-    left: 'Expr'
-    right: 'Expr'
+# class Mul(NamedTuple):
+#     left: 'Expr'
+#     right: 'Expr'
 
-Expr = Union[Num, Add, Sub, Mul]
+# Expr = Union[Num, Add, Sub, Mul]
 
-def print_expr(expr: Expr, end = "") -> None:
-    if isinstance(expr, Num):
-        print(expr.value, end=end)
-    elif isinstance(expr, Add):
-        print_expr(expr.left)
-        print("+", end=end)
-        print_expr(expr.right)
-    elif isinstance(expr, Sub):
-        print_expr(expr.left)
-        print("-",end=end)
-        print_expr(expr.right)
-    elif isinstance(expr, Mul):
-        print_expr(expr.left)
-        print("*",end=end)
-        print_expr(expr.right)
+# def print_expr(expr: Expr, end = "") -> None:
+#     if isinstance(expr, Num):
+#         print(expr.value, end=end)
+#     elif isinstance(expr, Add):
+#         print_expr(expr.left)
+#         print("+", end=end)
+#         print_expr(expr.right)
+#     elif isinstance(expr, Sub):
+#         print_expr(expr.left)
+#         print("-",end=end)
+#         print_expr(expr.right)
+#     elif isinstance(expr, Mul):
+#         print_expr(expr.left)
+#         print("*",end=end)
+#         print_expr(expr.right)
 
-expr1 = Mul(Num(44),Add(Num(1), Mul(Num(2), Num(3))))
-print_expr(expr1)
+# expr1 = Mul(Num(44),Add(Num(1), Mul(Num(2), Num(3))))
+# print_expr(expr1)
+
+def range_of(start, end):
+    def parse(text):
+        if len(text) > 0 and start <= text[0] <= end:
+            return text[1:], text[0]
+        return None
+    return parse
+
+def seq(p1, p2):
+    def parse(text):
+        result1 = p1(text)
+        if result1 is not None:
+            text1, val1 = result1
+            result2 = p2(text1)
+            if result2 is not None:
+                text2, val2 = result2
+                return text2, val1 + val2
+        return None
+    return parse
+
+digit = range_of('0', '9')
+number = seq(digit, digit)
+
+print(number('123456') is not None) 
+print(number('abtrtrqteqwu') is not None)
+
