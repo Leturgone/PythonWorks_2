@@ -1459,4 +1459,41 @@
 #     return output_string
 
 # print(markov('101',rules))
-    
+import re
+
+
+def markov(input_string, rules):
+    input_string = input_string.replace(' ', '')  # Удаление всех пробелов
+
+    while True:
+        changed = False
+        for pattern, replacement in rules:
+            if pattern == '^E$':
+                if input_string == 'E':
+                    return 'E'
+                continue
+            new_string = re.sub(pattern, replacement, input_string, count=1)
+            if new_string != input_string:
+                input_string = new_string
+                changed = True
+                break
+        if not changed:
+            break
+    return input_string
+
+
+arithmetic_rules = [
+    ('[0-9]+', 'E'),  
+    ('\\(E\\)', 'E'),  
+    ('E\\+E', 'E'),  
+    ('E-E', 'E'),
+    ('E\\*E', 'E'),
+    ('E/E', 'E'),
+    ('-E', 'E'),  
+    ('^E$', 'E')  
+]
+
+
+print(markov(' -12* (1 + 4) - (123 /3) ', arithmetic_rules))
+print(markov(' -12* (1 + 4+) - (123 /3) ', arithmetic_rules))
+
