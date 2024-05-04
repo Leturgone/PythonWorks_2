@@ -1331,28 +1331,109 @@
 # expr1 = Mul(Num(44),Add(Num(1), Mul(Num(2), Num(3))))
 # print_expr(expr1)
 
-def range_of(start, end):
-    def parse(text):
-        if len(text) > 0 and start <= text[0] <= end:
-            return text[1:], text[0]
-        return None
-    return parse
+# def range_of(start, end):
+#     def parse(text):
+#         if len(text) > 0 and start <= text[0] <= end:
+#             return text[1:], text[0]
+#         return None
+#     return parse
 
-def seq(p1, p2):
-    def parse(text):
-        result1 = p1(text)
-        if result1 is not None:
-            text1, val1 = result1
-            result2 = p2(text1)
-            if result2 is not None:
-                text2, val2 = result2
-                return text2, val1 + val2
-        return None
-    return parse
+# def seq(p1, p2):
+#     def parse(text):
+#         result1 = p1(text)
+#         if result1 is not None:
+#             text1, val1 = result1
+#             result2 = p2(text1)
+#             if result2 is not None:
+#                 text2, val2 = result2
+#                 return text2, val1 + val2
+#         return None
+#     return parse
 
-digit = range_of('0', '9')
-number = seq(digit, digit)
+# digit = range_of('0', '9')
+# number = seq(digit, digit)
 
-print(number('123456') is not None) 
-print(number('abtrtrqteqwu') is not None)
+# print(number('123456') is not None) 
+# print(number('abtrtrqteqwu') is not None)
 
+import csv
+
+
+class Print:
+    def __init__(self, filename):
+        self.filename = filename
+
+    def __iter__(self):
+        with open(self.filename, newline='', encoding='utf-8-sig') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                # Чистим ключи от BOM и пробелов
+                row = {key.strip('\ufeff').strip(): value for key, value in row.items()}
+                yield row
+
+
+class Project:
+    def __init__(self, output_columns, rename_columns, source):
+        self.output_columns = output_columns
+        self.rename_columns = rename_columns
+        self.source = source
+
+    def __iter__(self):
+        for row in self.source:
+            yield {new_col: row[old_col] for new_col, old_col in zip(self.output_columns, self.rename_columns)}
+
+
+class Filter:
+    def __init__(self, predicate, source):
+        self.predicate = predicate
+        self.source = source
+
+    def __iter__(self):
+        for row in self.source:
+            if self.predicate(row):
+                yield row
+
+
+class Field:
+    def __init__(self, name):
+        self.name = name
+
+    def __call__(self, row):
+        return row[self.name]
+
+
+class Value:
+    def __init__(self, value):
+        self.value = value
+
+    def __call__(self, row):
+        return self.value
+
+
+class Eq:
+    def __init__(self, left, right):
+        self.left = left
+        self.right = right
+
+    def __call__(self, row):
+        return self.left(row) == self.right(row)
+
+
+class And:
+    def __init__(self, *conditions):
+        self.conditions = conditions
+
+    def __call__(self, row):
+        return all(condition(row) for condition in self.conditions)
+
+# Файл для сканирования
+filename = 'annual_enterprise_survey_2021_financial_year_provisional_size_bands.csv'
+
+# Создание запроса
+query = Project(['industry_name_ANZSIC', 'value'], ['industry_name_ANZSIC', 'value'],
+                Filter(And(Eq(Field('year'), Value('2011')), Eq(Field('variable'), Value('Total income'))),
+                       Print(filename)))
+
+# Выполнение и вывод результатов запроса
+for result in query:
+    print(result)
