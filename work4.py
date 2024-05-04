@@ -1356,84 +1356,107 @@
 # print(number('123456') is not None) 
 # print(number('abtrtrqteqwu') is not None)
 
-import csv
+# import csv
 
 
-class Print:
-    def __init__(self, filename):
-        self.filename = filename
+# class Print:
+#     def __init__(self, filename):
+#         self.filename = filename
 
-    def __iter__(self):
-        with open(self.filename, newline='', encoding='utf-8-sig') as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                # Чистим ключи от BOM и пробелов
-                row = {key.strip('\ufeff').strip(): value for key, value in row.items()}
-                yield row
-
-
-class Project:
-    def __init__(self, output_columns, rename_columns, source):
-        self.output_columns = output_columns
-        self.rename_columns = rename_columns
-        self.source = source
-
-    def __iter__(self):
-        for row in self.source:
-            yield {new_col: row[old_col] for new_col, old_col in zip(self.output_columns, self.rename_columns)}
+#     def __iter__(self):
+#         with open(self.filename, newline='', encoding='utf-8-sig') as csvfile:
+#             reader = csv.DictReader(csvfile)
+#             for row in reader:
+#                 # Чистим ключи от BOM и пробелов
+#                 row = {key.strip('\ufeff').strip(): value for key, value in row.items()}
+#                 yield row
 
 
-class Filter:
-    def __init__(self, predicate, source):
-        self.predicate = predicate
-        self.source = source
+# class Project:
+#     def __init__(self, output_columns, rename_columns, source):
+#         self.output_columns = output_columns
+#         self.rename_columns = rename_columns
+#         self.source = source
 
-    def __iter__(self):
-        for row in self.source:
-            if self.predicate(row):
-                yield row
-
-
-class Field:
-    def __init__(self, name):
-        self.name = name
-
-    def __call__(self, row):
-        return row[self.name]
+#     def __iter__(self):
+#         for row in self.source:
+#             yield {new_col: row[old_col] for new_col, old_col in zip(self.output_columns, self.rename_columns)}
 
 
-class Value:
-    def __init__(self, value):
-        self.value = value
+# class Filter:
+#     def __init__(self, predicate, source):
+#         self.predicate = predicate
+#         self.source = source
 
-    def __call__(self, row):
-        return self.value
-
-
-class Eq:
-    def __init__(self, left, right):
-        self.left = left
-        self.right = right
-
-    def __call__(self, row):
-        return self.left(row) == self.right(row)
+#     def __iter__(self):
+#         for row in self.source:
+#             if self.predicate(row):
+#                 yield row
 
 
-class And:
-    def __init__(self, *conditions):
-        self.conditions = conditions
+# class Field:
+#     def __init__(self, name):
+#         self.name = name
 
-    def __call__(self, row):
-        return all(condition(row) for condition in self.conditions)
+#     def __call__(self, row):
+#         return row[self.name]
 
-# Файл для сканирования
-filename = 'annual_enterprise_survey_2021_financial_year_provisional_size_bands.csv'
 
-# Создание запроса
-query = Project(['industry_name_ANZSIC', 'value'], ['industry_name_ANZSIC', 'value'],
-                Filter(And(Eq(Field('year'), Value('2011')), Eq(Field('variable'), Value('Total income'))),
-                       Print(filename)))
+# class Value:
+#     def __init__(self, value):
+#         self.value = value
 
-# Выполнение и вывод результатов запроса
-for result in query:
-    print(result)
+#     def __call__(self, row):
+#         return self.value
+
+
+# class Eq:
+#     def __init__(self, left, right):
+#         self.left = left
+#         self.right = right
+
+#     def __call__(self, row):
+#         return self.left(row) == self.right(row)
+
+
+# class And:
+#     def __init__(self, *conditions):
+#         self.conditions = conditions
+
+#     def __call__(self, row):
+#         return all(condition(row) for condition in self.conditions)
+
+# # Файл для сканирования
+# filename = 'annual_enterprise_survey_2021_financial_year_provisional_size_bands.csv'
+
+# # Создание запроса
+# query = Project(['industry_name_ANZSIC', 'value'], ['industry_name_ANZSIC', 'value'],
+#                 Filter(And(Eq(Field('year'), Value('2011')), Eq(Field('variable'), Value('Total income'))),
+#                        Print(filename)))
+
+# # Выполнение и вывод результатов запроса
+# for result in query:
+#     print(result)
+
+
+# rules = [
+#     ('|0', '0||'),
+#     ('1', '0|'),
+#     ('0', '')
+# ]
+
+
+
+# def markov(input_string,rules):
+#     output_string = input_string
+#     while True:
+#         for rule in rules:
+#             if rule[0] in output_string:
+#                 output_string = output_string.replace(rule[0], rule[1], 1)
+#                 break
+#         else:
+#             break
+#     return output_string
+
+# print(markov('101',rules))
+    
