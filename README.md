@@ -1,3 +1,7 @@
+Задачи ЦАП по питону 2 курс
+
+Поставьте звездочку если помогло пжжпжп 🥺🥺🥺
+
 Задание 1
 ![изображение](https://github.com/Leturgone/PythonWorks_2/assets/145966860/5d0ea5eb-b503-4c72-a9e9-8979e782dc79)
 
@@ -28,5 +32,15 @@
 Задание 10
 
 ![изображение](https://github.com/Leturgone/PythonWorks_2/assets/145966860/715bcae8-5b5c-452a-8267-19fc97f29f45)
+
+Задание 11
+
+![изображение](https://github.com/Leturgone/PythonWorks_2/assets/145966860/16cabdc8-8d69-41d7-bed1-2d7e835b6106)
+
+Задание 12
+![изображение](https://github.com/Leturgone/PythonWorks_2/assets/145966860/c40a166c-08f5-49a4-a56d-359c2274d53d)
+![изображение](https://github.com/Leturgone/PythonWorks_2/assets/145966860/d5f3417c-7831-49bb-8f70-02dbc131c7d6)
+![изображение](https://github.com/Leturgone/PythonWorks_2/assets/145966860/a84947cd-f07a-4c4d-88cf-063a3b552e8e)
+
 
 
